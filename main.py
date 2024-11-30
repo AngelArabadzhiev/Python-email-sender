@@ -1,12 +1,15 @@
-﻿import openpyxl
+﻿import os
 import smtplib
-import os
-import dotenv
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import dotenv
+import openpyxl
 
 dotenv.load_dotenv()
+
 
 def read_email_addresses(file_path):
     workbook = openpyxl.load_workbook(file_path)
@@ -17,48 +20,95 @@ def read_email_addresses(file_path):
             email_addresses.append(row[0])
     return email_addresses
 
-def send_email_with_attachments(sender_email, sender_password, recipient_email, subject, body, directory):
+
+def send_email_with_signature_and_attachments(
+        sender_email, sender_password, recipient_email, subject, body, signature_image_path, directory
+):
     try:
-        msg = MIMEMultipart()
+
+        msg = MIMEMultipart("mixed")
         msg['From'] = sender_email
         msg['To'] = recipient_email
         msg['Subject'] = subject
 
-        msg.attach(MIMEText(body, 'plain'))
+        related_part = MIMEMultipart("related")
+        html_content = f"""
+        <html>
+        <body>
+            <p>{body}</p>
+            <br>
+            <img src="cid:signature_image" alt="Signature" style="width:20%; height:auto;">
+        </body>
+        </html>
+        """
+        related_part.attach(MIMEText(html_content, "html"))
+
+        if os.path.isfile(signature_image_path):
+            with open(signature_image_path, "rb") as img_file:
+                img = MIMEImage(img_file.read())
+                img.add_header("Content-ID", "<signature_image>")
+                img.add_header("Content-Disposition", "inline", filename=os.path.basename(signature_image_path))
+                related_part.attach(img)
+        else:
+            print(f"Signature image {signature_image_path} not found.")
+
+        msg.attach(related_part)
+
         if os.path.isdir(directory):
             for filename in os.listdir(directory):
                 file_path = os.path.join(directory, filename)
                 if os.path.isfile(file_path):
-                    with open(file_path, 'rb') as file:
-                        part = MIMEApplication(file.read(), Name=filename)
-                        part['Content-Disposition'] = f'attachment; filename="{filename}"'
-                        msg.attach(part)
+                    with open(file_path, "rb") as file:
+                        content = file.read()
+
+                        attachment = MIMEApplication(content, Name=filename)
+                        attachment.add_header(
+                            "Content-Disposition", f'attachment; filename="{filename}"'
+                        )
+                        msg.attach(attachment)
+
         else:
             print(f"Directory {directory} does not exist or is not valid.")
 
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:  # Adjust server for your email provider
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
             server.login(sender_email, sender_password)
             server.send_message(msg)
-
-        print(f"Email with attachments sent to {recipient_email}")
+            print("Successfully sent email.")
     except Exception as e:
         print(f"Failed to send email to {recipient_email}: {e}")
 
+
 def main():
     file_path_for_emails = input("Enter file path for emails: ")
-    file_path = file_path_for_emails
     sender_email = os.getenv("EMAIL")
     sender_password = os.getenv("PASSWORD")
-    subject = "Your Subject Here"
+    subject = "Информационно писмо - Гимназия по информатика"
+    signature_image_path = "image.png"
 
-    email_addresses = read_email_addresses(file_path)
+    if not os.path.isfile(signature_image_path):
+        print(f"Error: Signature image '{signature_image_path}' not found.")
+        return
+
+    email_addresses = read_email_addresses(file_path_for_emails)
     for email in email_addresses:
         print(f"Sending email to {email}...")
         directory = input("Enter the directory for attachments: ").strip()
-        name = input("Enter the name of the recipient: ")
-        body = f"Здравейте {name}"
-        send_email_with_attachments(sender_email, sender_password, email, subject, body, directory)
+
+        if not os.path.isdir(directory):
+            print(f"Error: Directory '{directory}' not found.")
+            continue
+
+        body = """Здравейте,
+<br><br>
+Приложено Ви изпращаме справка за резултатите от работата в клас на Вашето дете и сканирани писмени работи.
+<br><br>
+С уважение!"""
+
+        send_email_with_signature_and_attachments(
+            sender_email, sender_password, email, subject, body, signature_image_path, directory
+        )
+
 
 if __name__ == "__main__":
     main()
