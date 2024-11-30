@@ -4,11 +4,10 @@ from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
-import dotenv
+from dotenv import load_dotenv
 import openpyxl
 
-dotenv.load_dotenv()
+load_dotenv()
 
 
 def read_email_addresses(file_path):
@@ -84,7 +83,7 @@ def main():
     sender_email = os.getenv("EMAIL")
     sender_password = os.getenv("PASSWORD")
     subject = "Информационно писмо - Гимназия по информатика"
-    signature_image_path = "image.png"
+    signature_image_path = input("Enter file path for signature image: ").strip()
 
     if not os.path.isfile(signature_image_path):
         print(f"Error: Signature image '{signature_image_path}' not found.")
