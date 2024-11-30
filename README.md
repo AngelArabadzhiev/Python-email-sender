@@ -26,9 +26,8 @@ This Python script automates sending emails with attachments to multiple recipie
 2. Install the required Python packages:
 
    ```bash
-   pip install openpyxl python-dotenv
+   pip install -r requirements.txt
    ```
-
 3. Create a `.env` file in the project directory with the following content:
 
    ```plaintext
@@ -40,24 +39,25 @@ This Python script automates sending emails with attachments to multiple recipie
 
 ## Usage
 
-1. Run the script:
+1. Run the script with pyinstaller:
 
    ```bash
-   python main.py
+   pyinstaller main.py
    ```
-
-2. Follow the prompts:
-   - Enter the file path to the Excel file containing email addresses.
+2. Go in the dirctory that pyinstaller created(should be /dist/main/) and run the main file
+3. Follow the prompts:
+   - Enter the absolute file path to the Excel file containing email addresses.
+   - Enter the absolute path for the signature image
    - Enter the directory path containing the attachments.
    - Provide the recipient's name for personalized emails.
 
-3. The script will send emails to all listed addresses with the specified attachments.
+4. The script will send emails to all listed addresses with the specified attachments and the signature .
 
 ## Example Workflow
 
 1. Prepare an Excel file (`emails.xlsx`) with the following structure:
 
-   | Email Address      |
+   | Email Address      
    |--------------------|
    | recipient1@example.com |
    | recipient2@example.com |
@@ -66,9 +66,8 @@ This Python script automates sending emails with attachments to multiple recipie
 2. Place your attachments in a directory, e.g., `attachments/`.
 
 3. Run the script and provide inputs as prompted:
-   - File path: `emails.xlsx`
+   - Absolute file path: `emails.xlsx`
    - Attachments directory: `attachments/`
-   - Recipient's name: `John Doe`
 
 The script will send personalized emails with attachments to each recipient in the Excel file.
 
@@ -80,4 +79,4 @@ The script will send personalized emails with attachments to each recipient in t
 
 ## License
 
-This project is licensed under the GNU GENERAL PUBLIC LICENSE Version 3 License. See the `LICENSE` file for details.
+This project is licensed under the GPL V3 License. See the `LICENSE` file for details.
