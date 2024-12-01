@@ -79,4 +79,4 @@ The script will send personalized emails with attachments to each recipient in t
 
 ## License
 
-This project is licensed under the GPL V3 License. See the `LICENSE` file for details.
+This project is licensed under the LGPL V2.1 License. See the `LICENSE` file for details.
