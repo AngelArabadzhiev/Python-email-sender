@@ -101,7 +101,7 @@ def main():
     screen_height = root.winfo_screenheight()
 
     window_width = int(screen_width * 0.3)
-    window_height = int(screen_height * 0.15)
+    window_height = int(screen_height * 0.2)
 
     root.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
