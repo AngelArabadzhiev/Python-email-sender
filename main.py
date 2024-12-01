@@ -100,22 +100,25 @@ def main():
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
 
-    window_width = int(screen_width * 0.5)
-    window_height = int(screen_height * 0.5)
+    window_width = int(screen_width * 0.3)
+    window_height = int(screen_height * 0.15)
 
     root.geometry(f"{window_width}x{window_height}+{int((screen_width - window_width) / 2)}+{int((screen_height - window_height) / 2)}")
 
-    tk.Label(root, text='Absolute path to the table with emails').grid(row=0, column=0, pady=5, sticky="nsew")
-    tk.Label(root, text='Absolute path to the signature image').grid(row=1, column=0, pady=5, sticky="nsew")
+    tk.Label(root, text='Absolute path to the table with emails').grid(row=9, column=0, pady=5, sticky="nsew")
+    tk.Label(root, text='Absolute path to the signature image').grid(row=10, column=0, pady=5, sticky="nsew")
 
     path_for_emails = tk.StringVar()
     path_for_image = tk.StringVar()
 
-    tk.Entry(root, textvariable=path_for_emails).grid(row=0, column=1, pady=5, sticky="nsew")
-    tk.Entry(root, textvariable=path_for_image).grid(row=1, column=1, pady=5, sticky="nsew")
+    tk.Entry(root, textvariable=path_for_emails).grid(row=9, column=1, pady=5, sticky="nsew")
+    tk.Entry(root, textvariable=path_for_image).grid(row=10, column=1, pady=5, sticky="nsew")
 
     progress_label = tk.Label(root, text="")
-    progress_label.grid(row=3, column=0, columnspan=2, pady=10, sticky="nsew")
+    progress_label.grid(row=12, column=0, columnspan=2, pady=10, sticky="nsew")
+    root.columnconfigure(0, weight=1)
+    root.columnconfigure(1, weight=1)
+    root.columnconfigure(2, weight=1)
 
     def on_submit():
         file_path = path_for_emails.get()
@@ -134,7 +137,7 @@ def main():
 
         process_emails(file_path, signature_path, sender_email, sender_password, subject, progress_label, root)
 
-    tk.Button(root, text="Submit", command=on_submit).grid(row=2, column=1, pady=10, sticky="nsew")
+    tk.Button(root, text="Submit", command=on_submit).grid(row=15, column=1, pady=10, sticky="nsew")
 
     root.mainloop()
 
